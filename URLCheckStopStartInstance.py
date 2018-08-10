@@ -60,9 +60,12 @@ def stop_while_stopped_then_start_ec2():
 
 def lambda_handler(event, context):
     req = Request(someurl)
-
+    from socket import timeout
     try:
-        response = urlopen(req)
+        response = urlopen(req,timeout=10).read().decode('utf-8')
+    except timeout:
+        print('socket timed out - URL %s', url)
+        stop_while_stopped_then_start_ec2()
     except HTTPError as e:
         print('The server couldn\'t fulfill the request.')
         print('Error code: ', e.code)
